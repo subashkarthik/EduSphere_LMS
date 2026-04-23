@@ -1,8 +1,10 @@
-
 import React from 'react';
+import { 
+  LayoutDashboard, BookOpen, Calendar, GraduationCap, 
+  Library, Bell, Settings, LogOut, X, ShieldCheck, 
+  Sparkles, FileText, Activity, Layers, Menu
+} from 'lucide-react';
 import { UserRole } from '../types';
-import { NAVIGATION_ITEMS, ICON_MAP, ROLE_THEMES } from '../constants';
-import { LogOut, ChevronRight, X } from 'lucide-react';
 import Logo from './Logo';
 
 interface SidebarProps {
@@ -14,76 +16,133 @@ interface SidebarProps {
   onClose: () => void;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ currentRole, activeTab, setActiveTab, onLogout, isOpen, onClose }) => {
-  const filteredItems = NAVIGATION_ITEMS.filter(item => item.roles.includes(currentRole));
-  const theme = ROLE_THEMES[currentRole] || ROLE_THEMES[UserRole.STUDENT];
+const Sidebar: React.FC<SidebarProps> = ({ 
+  currentRole, activeTab, setActiveTab, onLogout, isOpen, onClose 
+}) => {
+  const menuItems = [
+    { id: 'dashboard', label: 'Intelligence Hub', icon: LayoutDashboard },
+    { id: 'journey', label: 'My Journey', icon: Sparkles },
+    { id: 'attendance', label: 'Participation', icon: Activity },
+    { id: 'academics', label: 'Curriculum', icon: BookOpen },
+    { id: 'exams', label: 'Assessments', icon: FileText },
+    { id: 'timetable', label: 'Calendar', icon: Calendar },
+    { id: 'library', label: 'Digital Assets', icon: Library },
+  ];
 
-  const categories = Array.from(new Set(filteredItems.map(item => item.category)));
+  const adminItems = [
+    { id: 'users', label: 'Faculty & Cohorts', icon: GraduationCap },
+    { id: 'system', label: 'Infrastructure', icon: Layers },
+  ];
 
   return (
     <>
+      {/* Mobile Overlay */}
       {isOpen && (
-        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[60] lg:hidden transition-opacity" onClick={onClose} />
+        <div 
+          className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[60] lg:hidden transition-opacity"
+          onClick={onClose}
+        />
       )}
 
-      <div className={`
-        fixed left-0 top-0 h-full text-white flex flex-col z-[70] transition-transform duration-500 ease-in-out
-        w-64 lg:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'}
-        ${theme.bg} shadow-2xl
+      <aside className={`
+        fixed top-0 left-0 bottom-0 w-64 bg-slate-900 text-white z-[70] transition-transform duration-300 ease-in-out
+        ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+        flex flex-col border-r border-white/5
       `}>
-        <div className="p-6 border-b border-white/10 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Logo size={42} />
-            <div>
-              <h1 className="font-black text-lg leading-tight tracking-tight">EduSpere</h1>
-              <p className={`text-[9px] ${theme.accentText} font-black uppercase tracking-[0.2em]`}>Learning Management System</p>
-            </div>
-          </div>
-          <button onClick={onClose} className="lg:hidden p-2 hover:bg-white/10 rounded-lg">
-            <X size={20} className="text-white/60" />
+        {/* Sidebar Header */}
+        <div className="p-6 flex items-center justify-between border-b border-white/5">
+          <Logo />
+          <button onClick={onClose} className="lg:hidden p-2 hover:bg-white/10 rounded-xl">
+            <X size={20} />
           </button>
         </div>
 
-        <nav className="flex-1 py-6 px-4 space-y-8 overflow-y-auto custom-scrollbar">
-          {categories.map(cat => (
-            <div key={cat} className="space-y-1">
-              <p className="px-4 text-[9px] font-black uppercase tracking-[0.3em] text-white/30 mb-2">{cat}</p>
-              {filteredItems.filter(i => i.category === cat).map((item) => {
-                const Icon = ICON_MAP[item.icon];
+        {/* Navigation */}
+        <nav className="flex-1 overflow-y-auto px-4 py-8 space-y-8 scrollbar-hide">
+          <div className="space-y-1">
+            <p className="px-4 text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] mb-4">Core Intelligence</p>
+            {menuItems.map((item) => {
+              const Icon = item.icon;
+              const isActive = activeTab === item.id;
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => { setActiveTab(item.id); onClose(); }}
+                  className={`
+                    w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group
+                    ${isActive 
+                      ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20' 
+                      : 'text-slate-400 hover:text-white hover:bg-white/5'}
+                  `}
+                >
+                  <Icon size={18} className={isActive ? 'text-white' : 'text-slate-500 group-hover:text-indigo-400 transition-colors'} />
+                  <span className="text-xs font-bold tracking-tight">{item.label}</span>
+                  {isActive && <div className="ml-auto w-1 h-4 bg-white/40 rounded-full"></div>}
+                </button>
+              );
+            })}
+          </div>
+
+          {(currentRole === UserRole.ADMIN) && (
+            <div className="space-y-1">
+              <p className="px-4 text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] mb-4">Administrative</p>
+              {adminItems.map((item) => {
+                const Icon = item.icon;
                 const isActive = activeTab === item.id;
                 return (
                   <button
                     key={item.id}
-                    onClick={() => {
-                      setActiveTab(item.id);
-                      if (window.innerWidth < 1024) onClose();
-                    }}
-                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl transition-all duration-300 group relative ${
-                      isActive 
-                        ? `${theme.primary} text-white shadow-xl shadow-black/20` 
-                        : 'text-white/40 hover:bg-white/5 hover:text-white'
-                    }`}
+                    onClick={() => { setActiveTab(item.id); onClose(); }}
+                    className={`
+                      w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group
+                      ${isActive 
+                        ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20' 
+                        : 'text-slate-400 hover:text-white hover:bg-white/5'}
+                    `}
                   >
-                    <Icon size={18} className={isActive ? 'text-white' : 'text-white/20 group-hover:text-white'} />
-                    <span className="font-bold text-xs tracking-tight">{item.label}</span>
-                    {isActive && <ChevronRight size={14} className="ml-auto opacity-50" />}
+                    <Icon size={18} className={isActive ? 'text-white' : 'text-slate-500 group-hover:text-indigo-400 transition-colors'} />
+                    <span className="text-xs font-bold tracking-tight">{item.label}</span>
                   </button>
                 );
               })}
             </div>
-          ))}
+          )}
         </nav>
 
-        <div className="p-4 border-t border-white/10 safe-bottom">
-          <button 
-            onClick={onLogout}
-            className="w-full flex items-center gap-3 px-4 py-4 text-white/30 hover:bg-rose-500/20 hover:text-rose-400 rounded-2xl transition-all font-black text-[10px] uppercase tracking-widest"
-          >
-            <LogOut size={16} />
-            <span>Terminate Session</span>
-          </button>
+        {/* Sidebar Footer */}
+        <div className="p-4 border-t border-white/5 bg-slate-950/50">
+          <div className="flex flex-col gap-2">
+            <button 
+              onClick={() => { setActiveTab('settings'); onClose(); }}
+              className={`
+                w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all
+                ${activeTab === 'settings' ? 'bg-white/10 text-white' : 'text-slate-500 hover:text-white hover:bg-white/5'}
+              `}
+            >
+              <Settings size={18} />
+              <span className="text-xs font-bold tracking-tight">Preferences</span>
+            </button>
+            <button 
+              onClick={onLogout}
+              className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 transition-all"
+            >
+              <LogOut size={18} />
+              <span className="text-xs font-bold tracking-tight">Sign Out</span>
+            </button>
+          </div>
+          
+          <div className="mt-6 px-4 py-4 bg-white/5 border border-white/10 rounded-2xl">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-2 h-2 rounded-full bg-emerald-500"></div>
+              <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Network Secure</span>
+            </div>
+            <p className="text-[9px] text-slate-500 font-medium leading-tight">
+              Access from: 192.168.1.42<br/>
+              Last audit: 12m ago
+            </p>
+          </div>
         </div>
-      </div>
+      </aside>
     </>
   );
 };

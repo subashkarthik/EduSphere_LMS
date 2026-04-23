@@ -229,8 +229,8 @@ const App: React.FC = () => {
   const theme = ROLE_THEMES[currentRole];
 
   return (
-    <div className="min-h-screen flex bg-slate-50 overflow-x-hidden">
-      <div className="flex w-full animate-in fade-in slide-in-from-bottom-4 duration-700">
+    <div className="min-h-screen flex bg-[#f8fafc] overflow-x-hidden selection:bg-indigo-100">
+      <div className="flex w-full animate-in fade-in duration-1000">
         <Sidebar 
           currentRole={currentRole} 
           activeTab={activeTab} 
@@ -252,34 +252,34 @@ const App: React.FC = () => {
         </div>
 
         {/* Mobile Bottom Navigation Bar */}
-        <nav className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-xl border-t border-slate-200 lg:hidden flex items-center justify-around px-2 py-3 z-[50] safe-bottom shadow-[0_-8px_30px_rgb(0,0,0,0.04)]">
+        <nav className="fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-xl border-t border-slate-200 lg:hidden flex items-center justify-around px-2 py-3 z-[50] safe-bottom shadow-[0_-8px_30px_rgb(0,0,0,0.04)]">
           <button 
             onClick={() => setActiveTab('dashboard')} 
-            className={`flex flex-col items-center gap-1 flex-1 transition-all ${activeTab === 'dashboard' ? theme.text : 'text-slate-400'}`}
+            className={`flex flex-col items-center gap-1 flex-1 transition-all ${activeTab === 'dashboard' ? 'text-indigo-600' : 'text-slate-400'}`}
           >
-            <LayoutDashboard size={20} strokeWidth={activeTab === 'dashboard' ? 3 : 2} />
-            <span className="text-[9px] font-black uppercase tracking-widest">Home</span>
+            <LayoutDashboard size={20} strokeWidth={activeTab === 'dashboard' ? 2.5 : 2} />
+            <span className="text-[9px] font-black uppercase tracking-widest">Dash</span>
           </button>
           <button 
-            onClick={() => setActiveTab('academics')} 
-            className={`flex flex-col items-center gap-1 flex-1 transition-all ${activeTab === 'academics' ? theme.text : 'text-slate-400'}`}
+            onClick={() => setActiveTab('journey')} 
+            className={`flex flex-col items-center gap-1 flex-1 transition-all ${activeTab === 'journey' ? 'text-indigo-600' : 'text-slate-400'}`}
           >
-            <Calendar size={20} strokeWidth={activeTab === 'academics' ? 3 : 2} />
-            <span className="text-[9px] font-black uppercase tracking-widest">Schedule</span>
+            <Sparkles size={20} strokeWidth={activeTab === 'journey' ? 2.5 : 2} />
+            <span className="text-[9px] font-black uppercase tracking-widest">Journey</span>
           </button>
           <button 
             onClick={() => setActiveTab('attendance')} 
-            className={`flex flex-col items-center gap-1 flex-1 transition-all ${activeTab === 'attendance' ? theme.text : 'text-slate-400'}`}
+            className={`flex flex-col items-center gap-1 flex-1 transition-all ${activeTab === 'attendance' ? 'text-indigo-600' : 'text-slate-400'}`}
           >
-            <Users size={20} strokeWidth={activeTab === 'attendance' ? 3 : 2} />
-            <span className="text-[9px] font-black uppercase tracking-widest">Logs</span>
+            <Activity size={20} strokeWidth={activeTab === 'attendance' ? 2.5 : 2} />
+            <span className="text-[9px] font-black uppercase tracking-widest">Data</span>
           </button>
           <button 
             onClick={() => setIsSidebarOpen(true)} 
             className={`flex flex-col items-center gap-1 flex-1 text-slate-400`}
           >
             <Menu size={20} />
-            <span className="text-[9px] font-black uppercase tracking-widest">More</span>
+            <span className="text-[9px] font-black uppercase tracking-widest">System</span>
           </button>
         </nav>
 

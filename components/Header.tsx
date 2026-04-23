@@ -1,136 +1,74 @@
-
-import React, { useState, useRef, useEffect } from 'react';
-import { Bell, Search, Menu, Shield, X } from 'lucide-react';
-import { UserRole, UserProfile } from '../types';
-import { ROLE_THEMES } from '../constants';
+import React from 'react';
+import { Search, Bell, HelpCircle, ShieldCheck, Clock, User, LogOut, Settings, ChevronDown } from 'lucide-react';
+import { UserProfile } from '../types';
 
 interface HeaderProps {
   user: UserProfile;
   onOpenMenu: () => void;
-  onNavigate?: (tab: string) => void;
 }
 
-// All searchable navigation targets
-const SEARCH_ITEMS = [
-  { label: 'Dashboard', tab: 'dashboard', keywords: ['home', 'overview', 'hub', 'console'] },
-  { label: 'My Courses', tab: 'academics', keywords: ['courses', 'subjects', 'curriculum', 'academics', 'modules'] },
-  { label: 'Class Schedule', tab: 'timetable', keywords: ['timetable', 'schedule', 'class', 'calendar', 'slots'] },
-  { label: 'Attendance', tab: 'attendance', keywords: ['attendance', 'present', 'absent', 'percentage', 'ledger'] },
-  { label: 'Results & GPA', tab: 'exams', keywords: ['exams', 'results', 'grades', 'transcript', 'gpa', 'sgpa'] },
-  { label: 'Digital Library', tab: 'library', keywords: ['library', 'books', 'reading', 'borrow', 'catalog'] },
-  { label: 'Notice Board', tab: 'announcements', keywords: ['announcements', 'notices', 'news', 'bulletin'] },
-  { label: 'Preferences', tab: 'settings', keywords: ['settings', 'preferences', 'profile', 'config'] },
-];
-
-const Header: React.FC<HeaderProps> = ({ user, onOpenMenu, onNavigate }) => {
-  const theme = ROLE_THEMES[user.role] || ROLE_THEMES[UserRole.STUDENT];
-  const [searchQuery, setSearchQuery] = useState('');
-  const [showResults, setShowResults] = useState(false);
-  const searchRef = useRef<HTMLDivElement>(null);
-
-  const filteredResults = searchQuery.trim()
-    ? SEARCH_ITEMS.filter(item => {
-        const q = searchQuery.toLowerCase();
-        return item.label.toLowerCase().includes(q) || 
-               item.keywords.some(kw => kw.includes(q));
-      })
-    : [];
-
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
-        setShowResults(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
-  const handleSelect = (tab: string) => {
-    setSearchQuery('');
-    setShowResults(false);
-    // Dispatch custom event for navigation (App.tsx listens)
-    window.dispatchEvent(new CustomEvent('universe-navigate', { detail: { tab } }));
-  };
-
+const Header: React.FC<HeaderProps> = ({ user, onOpenMenu }) => {
   return (
-    <header className="h-16 bg-white/80 backdrop-blur-md border-b border-slate-200 fixed top-0 right-0 left-0 lg:left-64 z-40 px-4 md:px-8 flex items-center justify-between safe-top">
-      <div className="flex items-center gap-4 flex-1">
+    <header className="fixed top-0 right-0 left-0 lg:left-64 h-16 bg-white/80 backdrop-blur-xl border-b border-slate-200 z-40 px-4 md:px-8 flex items-center justify-between transition-all duration-300">
+      {/* Search & System Status */}
+      <div className="flex items-center gap-6 flex-1">
         <button 
           onClick={onOpenMenu}
-          className="lg:hidden p-2 hover:bg-slate-100 rounded-lg text-slate-600 transition-colors"
+          className="lg:hidden p-2.5 hover:bg-slate-100 rounded-xl transition-all"
         >
-          <Menu size={24} />
+          <div className="w-5 h-0.5 bg-slate-900 mb-1.5 rounded-full"></div>
+          <div className="w-5 h-0.5 bg-slate-900 mb-1.5 rounded-full"></div>
+          <div className="w-5 h-0.5 bg-slate-900 rounded-full"></div>
         </button>
 
-        <div ref={searchRef} className="relative w-full max-w-xs md:max-w-md hidden sm:block">
-          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
-            <Search size={18} />
-          </span>
+        <div className="hidden md:flex items-center gap-4 text-slate-400">
+          <div className="flex items-center gap-2 px-3 py-1.5 bg-emerald-50 text-emerald-600 rounded-lg border border-emerald-100/50">
+            <ShieldCheck size={14} />
+            <span className="text-[10px] font-black uppercase tracking-widest">Healthy</span>
+          </div>
+          <div className="w-[1px] h-4 bg-slate-200"></div>
+          <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider">
+            <Clock size={14} />
+            <span>S6 • CSE</span>
+          </div>
+        </div>
+
+        <div className="relative max-w-md w-full hidden md:block ml-4">
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
           <input 
             type="text" 
-            placeholder="Search modules..." 
-            value={searchQuery}
-            onChange={(e) => { setSearchQuery(e.target.value); setShowResults(true); }}
-            onFocus={() => searchQuery && setShowResults(true)}
-            className={`w-full pl-10 pr-10 py-2 bg-slate-100 border-transparent focus:bg-white focus:border-slate-300 rounded-xl text-sm transition-all`}
+            placeholder="Global search (Cmd + K)..." 
+            className="w-full bg-slate-100/50 border border-transparent focus:bg-white focus:border-indigo-500/20 rounded-xl pl-10 pr-4 py-2 text-sm font-medium transition-all outline-none"
           />
-          {searchQuery && (
-            <button onClick={() => { setSearchQuery(''); setShowResults(false); }} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
-              <X size={16} />
-            </button>
-          )}
-
-          {/* Search Results Dropdown */}
-          {showResults && filteredResults.length > 0 && (
-            <div className="absolute top-full mt-2 left-0 right-0 bg-white border border-slate-200 rounded-2xl shadow-2xl overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-200">
-              {filteredResults.map((item) => (
-                <button
-                  key={item.tab}
-                  onClick={() => handleSelect(item.tab)}
-                  className="w-full px-5 py-3.5 text-left hover:bg-slate-50 transition-colors flex items-center gap-3 border-b border-slate-50 last:border-0"
-                >
-                  <div className={`w-8 h-8 rounded-xl ${theme.light} ${theme.text} flex items-center justify-center text-[10px] font-black`}>
-                    {item.label[0]}
-                  </div>
-                  <div>
-                    <p className="text-sm font-bold text-slate-800">{item.label}</p>
-                    <p className="text-[10px] text-slate-400 font-medium">Navigate to {item.label}</p>
-                  </div>
-                </button>
-              ))}
-            </div>
-          )}
-
-          {showResults && searchQuery && filteredResults.length === 0 && (
-            <div className="absolute top-full mt-2 left-0 right-0 bg-white border border-slate-200 rounded-2xl shadow-2xl p-6 z-50 text-center">
-              <p className="text-sm text-slate-400 font-medium">No modules matching "{searchQuery}"</p>
-            </div>
-          )}
         </div>
       </div>
 
-      <div className="flex items-center gap-2 md:gap-6 ml-2">
-        {/* Role Badge */}
-        <div className={`flex items-center gap-1 md:gap-2 px-3 md:px-4 py-1.5 ${theme.light} rounded-lg border ${theme.border} transition-colors duration-500`}>
-          <Shield size={14} className={`${theme.text} hidden xs:block`} />
-          <span className={`text-[10px] md:text-xs font-black ${theme.text} uppercase tracking-tighter`}>{user.role}</span>
+      {/* User Actions */}
+      <div className="flex items-center gap-2 md:gap-4">
+        <div className="flex items-center gap-1">
+          <button className="p-2.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition-all relative group">
+            <Bell size={20} />
+            <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-rose-500 border-2 border-white rounded-full"></span>
+          </button>
+          <button className="p-2.5 text-slate-400 hover:text-slate-900 hover:bg-slate-100 rounded-xl transition-all hidden sm:block">
+            <HelpCircle size={20} />
+          </button>
         </div>
 
-        <button className="relative p-2 text-slate-500 hover:bg-slate-100 rounded-full transition-colors hidden xs:flex">
-          <Bell size={20} />
-          <span className={`absolute top-2.5 right-2.5 w-2 h-2 rounded-full border-2 border-white ${theme.accent.replace('bg-', 'bg-')}`}></span>
-        </button>
+        <div className="w-[1px] h-6 bg-slate-200 mx-1 hidden sm:block"></div>
 
-        <div className="h-8 w-[1px] bg-slate-200 hidden md:block"></div>
-
-        <div className="flex items-center gap-2 md:gap-3">
+        <div className="flex items-center gap-3 pl-2 group cursor-pointer">
           <div className="text-right hidden sm:block">
-            <p className="text-xs md:text-sm font-bold text-slate-900 leading-none">{user.name}</p>
-            <p className={`text-[9px] font-black ${theme.text} uppercase tracking-widest mt-1`}>{user.role}</p>
+            <p className="text-xs font-black text-slate-900 tracking-tight leading-none mb-1">{user.name}</p>
+            <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{user.role}</p>
           </div>
-          <div className={`w-8 h-8 md:w-10 md:h-10 rounded-full bg-slate-200 overflow-hidden ring-2 ${theme.border} shrink-0`}>
-            <img src={user.avatar} alt={user.name} className="w-full h-full object-cover" />
+          <div className="relative">
+            <img 
+              src={user.avatar} 
+              alt={user.name} 
+              className="w-9 h-9 rounded-xl object-cover ring-2 ring-slate-100 group-hover:ring-indigo-500/20 transition-all shadow-sm"
+            />
+            <div className="absolute -bottom-1 -right-1 w-3.5 h-3.5 bg-emerald-500 border-2 border-white rounded-full"></div>
           </div>
         </div>
       </div>
