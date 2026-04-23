@@ -1,0 +1,8 @@
+{
+  "name": "EduSphere - Learning Experience Platform",
+  "description": "A Multi-Tenant, AI-Ready Learning Experience Platform (LXP) for Institutions, featuring AI-driven academic insights, role-based dashboards, and complete institutional oversight.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}

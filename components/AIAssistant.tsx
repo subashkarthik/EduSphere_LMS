@@ -1,0 +1,118 @@
+
+import React, { useState, useRef, useEffect } from 'react';
+import { Sparkles, Send, X, Bot } from 'lucide-react';
+import { askCMSAssistant } from '../services/geminiService';
+import { UserRole } from '../types';
+import { ROLE_THEMES } from '../constants';
+
+interface Message {
+  role: 'user' | 'assistant';
+  content: string;
+}
+
+interface AIAssistantProps {
+  role: UserRole;
+}
+
+const AIAssistant: React.FC<AIAssistantProps> = ({ role }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [input, setInput] = useState('');
+  const [messages, setMessages] = useState<Message[]>([
+    { role: 'assistant', content: `Greetings! I am your EduSphere AI. How may I assist your ${role.toLowerCase()} activities today?` }
+  ]);
+  const [loading, setLoading] = useState(false);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const theme = ROLE_THEMES[role] || ROLE_THEMES[UserRole.STUDENT];
+
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  }, [messages, loading]);
+
+  const handleSend = async () => {
+    if (!input.trim() || loading) return;
+    const userMsg = input;
+    setInput('');
+    setMessages(prev => [...prev, { role: 'user', content: userMsg }]);
+    setLoading(true);
+    const response = await askCMSAssistant(userMsg, role);
+    setMessages(prev => [...prev, { role: 'assistant', content: response }]);
+    setLoading(false);
+  };
+
+  return (
+    <div className={`fixed z-[100] transition-all duration-500 ${isOpen ? 'inset-0 md:inset-auto md:bottom-8 md:right-8' : 'bottom-6 right-6 md:bottom-8 md:right-8'}`}>
+      {!isOpen ? (
+        <button
+          onClick={() => setIsOpen(true)}
+          className={`w-14 h-14 md:w-16 md:h-16 ${theme.primary} text-white rounded-full shadow-2xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all group`}
+        >
+          <Sparkles size={24} className="animate-pulse" />
+        </button>
+      ) : (
+        <div className="w-full h-full md:w-96 md:h-[600px] bg-white md:rounded-3xl shadow-2xl border border-slate-200 flex flex-col overflow-hidden animate-in zoom-in-95 duration-300">
+          <div className={`${theme.primary} p-5 flex items-center justify-between text-white safe-top`}>
+            <div className="flex items-center gap-3">
+              <Bot size={22} className={theme.accentText} />
+              <div>
+                <h3 className="font-black text-sm uppercase tracking-widest">EduAI Assistant</h3>
+                <p className="text-[10px] text-white/60 font-bold uppercase tracking-tighter">{role} Priority Channel</p>
+              </div>
+            </div>
+            <button onClick={() => setIsOpen(false)} className="hover:bg-white/10 p-2 rounded-full transition-colors">
+              <X size={20} />
+            </button>
+          </div>
+
+          <div ref={scrollRef} className="flex-1 overflow-y-auto p-5 space-y-5 bg-slate-50">
+            {messages.map((msg, idx) => (
+              <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                <div className={`max-w-[90%] p-4 rounded-2xl text-sm leading-relaxed font-medium shadow-sm ${
+                  msg.role === 'user' 
+                    ? `${theme.primary} text-white rounded-tr-none` 
+                    : 'bg-white text-slate-700 border border-slate-100 rounded-tl-none'
+                }`}>
+                  {msg.content}
+                </div>
+              </div>
+            ))}
+            {loading && (
+              <div className="flex justify-start">
+                <div className="bg-white border border-slate-100 shadow-sm rounded-2xl rounded-tl-none p-4">
+                  <div className="flex gap-2">
+                    <div className={`w-2 h-2 ${theme.primary} rounded-full animate-bounce`}></div>
+                    <div className={`w-2 h-2 ${theme.primary} rounded-full animate-bounce delay-100`}></div>
+                    <div className={`w-2 h-2 ${theme.primary} rounded-full animate-bounce delay-200`}></div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div className="p-5 bg-white border-t border-slate-100 safe-bottom">
+            <div className="flex gap-3">
+              <input
+                type="text"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+                placeholder={`Query ${role.toLowerCase()} portal...`}
+                className="flex-1 bg-slate-100 border-transparent focus:bg-white focus:ring-2 focus:ring-slate-200 rounded-2xl px-5 py-3 text-sm font-bold outline-none transition-all"
+              />
+              <button 
+                onClick={handleSend}
+                disabled={loading}
+                className={`${theme.primary} text-white p-4 rounded-2xl hover:opacity-90 disabled:opacity-50 transition-all active:scale-90 shadow-lg`}
+              >
+                <Send size={18} />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default AIAssistant;
