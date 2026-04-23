@@ -7,7 +7,7 @@ import SplashScreen from './components/SplashScreen';
 import ErrorBoundary from './components/ErrorBoundary';
 import { FullPageLoader } from './components/LoadingSkeleton';
 import { UserRole, UserProfile } from './types';
-import { LayoutDashboard, Calendar, Users, Menu, Lock, LogIn, AlertCircle, Loader2 } from 'lucide-react';
+import { LayoutDashboard, Calendar, Users, Menu, Lock, LogIn, AlertCircle, Loader2, Sparkles, Activity } from 'lucide-react';
 import { ROLE_THEMES } from './constants';
 import { authApi, setTokens, clearTokens, getAccessToken } from './services/api';
 

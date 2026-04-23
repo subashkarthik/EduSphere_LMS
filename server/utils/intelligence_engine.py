@@ -46,7 +46,7 @@ def update_student_intelligence(db: Session, student_id: str):
     # 2. Calculate Assessment Score (50%)
     results = db.query(ExamResult).filter(ExamResult.student_id == student_id).all()
     if results:
-        avg_marks_perc = sum([(r.marks_obtained / r.exam_schedule.max_marks) * 100 for r in results]) / len(results)
+        avg_marks_perc = sum([(r.marks_obtained / r.exam.max_marks) * 100 for r in results]) / len(results)
     else:
         avg_marks_perc = 0
     
