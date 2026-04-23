@@ -1,22 +1,25 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
 import AIAssistant from './components/AIAssistant';
 import SplashScreen from './components/SplashScreen';
-import Dashboard from './views/Dashboard';
-import { 
-  AttendanceModule, SISModule, FinanceModule, SubjectsModule, 
-  ExamsModule, FacultyMgmtModule, PlacementsModule 
-} from './views/Modules';
-import TimetableView from './views/TimetableView';
-import AnnouncementsView from './views/AnnouncementsView';
-import LibraryView from './views/LibraryView';
-import SystemLogsView from './views/SystemLogsView';
+import ErrorBoundary from './components/ErrorBoundary';
+import { FullPageLoader } from './components/LoadingSkeleton';
 import { UserRole, UserProfile } from './types';
 import { LayoutDashboard, Calendar, Users, Menu, Lock, LogIn, AlertCircle, Loader2 } from 'lucide-react';
 import { ROLE_THEMES } from './constants';
 import { authApi, setTokens, clearTokens, getAccessToken } from './services/api';
+
+// Lazy-loaded views for code-splitting
+const Dashboard = lazy(() => import('./views/Dashboard'));
+const AttendanceModule = lazy(() => import('./views/AttendanceModule'));
+const SubjectsModule = lazy(() => import('./views/SubjectsModule'));
+const ExamsModule = lazy(() => import('./views/ExamsModule'));
+const TimetableView = lazy(() => import('./views/TimetableView'));
+const AnnouncementsView = lazy(() => import('./views/AnnouncementsView'));
+const LibraryView = lazy(() => import('./views/LibraryView'));
+const LearningJourney = lazy(() => import('./views/LearningJourney'));
 
 const App: React.FC = () => {
   const [showSplash, setShowSplash] = useState(true);
@@ -26,17 +29,17 @@ const App: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [loginError, setLoginError] = useState('');
   const [loginLoading, setLoginLoading] = useState(false);
-  const [loginEmail, setLoginEmail] = useState('alex.j@edusphere.edu.in');
+  const [loginEmail, setLoginEmail] = useState('alex.j@universe.edu.in');
   const [loginPassword, setLoginPassword] = useState('student123');
   
   const [user, setUser] = useState<UserProfile>({
     id: '1',
     name: 'Alex Johnson',
     role: UserRole.STUDENT,
-    email: 'alex.j@edusphere.edu.in',
+    email: 'alex.j@universe.edu.in',
     department: 'Computer Science',
     avatar: 'https://picsum.photos/seed/alex/200/200',
-    enrollmentNo: 'EDUS/2021/CS/042'
+    enrollmentNo: 'UNI/2021/CS/042'
   });
 
   useEffect(() => {
@@ -44,22 +47,21 @@ const App: React.FC = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  // Prefill email based on role selection
-  const handleRoleChange = (newRole: UserRole) => {
-    setCurrentRole(newRole);
-    setLoginError('');
-    if (newRole === UserRole.FACULTY) {
-      setLoginPassword('faculty123');
-      setLoginEmail('arun.kumar@edusphere.edu.in');
-    } else if (newRole === UserRole.ADMIN) {
-      setLoginPassword('admin123');
-      setLoginEmail('admin@edusphere.edu.in');
-    } else {
-      setLoginEmail('alex.j@edusphere.edu.in');
-      setLoginPassword('student123');
-    }
+  // Listen for navigation events from global search
+  useEffect(() => {
+    const handleNavigate = (e: Event) => {
+      const detail = (e as CustomEvent).detail;
+      if (detail?.tab) setActiveTab(detail.tab);
+    };
+    window.addEventListener('universe-navigate', handleNavigate);
+    return () => window.removeEventListener('universe-navigate', handleNavigate);
+  }, []);
 
-  };
+  // Default to student prefill
+  useEffect(() => {
+    setLoginEmail('alex.j@universe.edu.in');
+    setLoginPassword('student123');
+  }, []);
 
   const handleLogin = async () => {
     if (loginLoading) return;
@@ -112,40 +114,50 @@ const App: React.FC = () => {
   };
 
   const renderContent = () => {
-    switch (activeTab) {
-      case 'dashboard':
-        return <Dashboard role={currentRole} />;
-      case 'attendance':
-        return <AttendanceModule id="attendance" role={currentRole} />;
-      case 'sis':
-        return <SISModule id="sis" role={currentRole} />;
-      case 'faculty-mgmt':
-        return <FacultyMgmtModule id="faculty-mgmt" role={currentRole} />;
-      case 'finance':
-        return <FinanceModule id="finance" role={currentRole} />;
-      case 'academics':
-        return <SubjectsModule id="academics" role={currentRole} />;
-      case 'exams':
-        return <ExamsModule id="exams" role={currentRole} />;
-      case 'placements':
-        return <PlacementsModule id="placements" role={currentRole} />;
-      case 'timetable':
-        return <TimetableView role={currentRole} />;
-      case 'announcements':
-        return <AnnouncementsView role={currentRole} />;
-      case 'library':
-        return <LibraryView role={currentRole} />;
-      case 'logs':
-        return <SystemLogsView role={currentRole} />;
-      default:
-        return (
-          <div className="flex flex-col items-center justify-center p-10 md:p-20 text-center bg-white rounded-3xl border border-slate-100 shadow-sm animate-in fade-in duration-500">
-            <div className="w-16 h-16 md:w-20 md:h-20 bg-slate-100 rounded-full flex items-center justify-center mb-6 text-2xl md:text-3xl">🏗️</div>
-            <h2 className="text-xl md:text-2xl font-black text-slate-800 uppercase tracking-tight">{activeTab} Console</h2>
-            <p className="text-slate-500 mt-2 max-w-md font-medium text-sm md:text-base">This institutional module is currently performing a scheduled database re-indexing.</p>
-          </div>
-        );
-    }
+    const content = (() => {
+      switch (activeTab) {
+        case 'dashboard':
+          return <Dashboard role={currentRole} />;
+        case 'journey':
+          return <LearningJourney />;
+        case 'attendance':
+          return <AttendanceModule id="attendance" role={currentRole} />;
+        case 'academics':
+          return <SubjectsModule id="academics" role={currentRole} />;
+        case 'exams':
+          return <ExamsModule id="exams" role={currentRole} />;
+        case 'timetable':
+          return <TimetableView role={currentRole} />;
+        case 'announcements':
+          return <AnnouncementsView role={currentRole} />;
+        case 'library':
+          return <LibraryView role={currentRole} />;
+        case 'settings':
+          return (
+            <div className="flex flex-col items-center justify-center p-10 md:p-20 text-center bg-white rounded-3xl border border-slate-100 shadow-sm animate-in fade-in duration-500">
+              <div className="w-16 h-16 md:w-20 md:h-20 bg-slate-100 rounded-full flex items-center justify-center mb-6 text-2xl md:text-3xl">⚙️</div>
+              <h2 className="text-xl md:text-2xl font-black text-slate-800 uppercase tracking-tight">System Preferences</h2>
+              <p className="text-slate-500 mt-2 max-w-md font-medium text-sm md:text-base">Personalize your learning environment and notification settings.</p>
+            </div>
+          );
+        default:
+          return (
+            <div className="flex flex-col items-center justify-center p-10 md:p-20 text-center bg-white rounded-3xl border border-slate-100 shadow-sm animate-in fade-in duration-500">
+              <div className="w-16 h-16 md:w-20 md:h-20 bg-slate-100 rounded-full flex items-center justify-center mb-6 text-2xl md:text-3xl">🏗️</div>
+              <h2 className="text-xl md:text-2xl font-black text-slate-800 uppercase tracking-tight">{activeTab} Console</h2>
+              <p className="text-slate-500 mt-2 max-w-md font-medium text-sm md:text-base">This institutional module is currently performing a scheduled database re-indexing.</p>
+            </div>
+          );
+      }
+    })();
+
+    return (
+      <ErrorBoundary key={activeTab}>
+        <Suspense fallback={<FullPageLoader />}>
+          {content}
+        </Suspense>
+      </ErrorBoundary>
+    );
   };
 
   if (showSplash) return <SplashScreen />;
@@ -161,23 +173,11 @@ const App: React.FC = () => {
             </div>
           </div>
           <div className="text-center mb-8">
-            <h2 className="text-2xl md:text-3xl font-black text-white tracking-tight uppercase">EduSphere Gateway</h2>
-            <p className="text-white/40 font-black text-[9px] uppercase tracking-[0.4em] mt-2">Unified Learning Experience Platform</p>
+            <h2 className="text-2xl md:text-3xl font-black text-white tracking-tight uppercase">EduSpere</h2>
+            <p className="text-white/40 font-black text-[9px] uppercase tracking-[0.4em] mt-2">Learning Management System</p>
           </div>
           
           <div className="space-y-6">
-            <div className="flex bg-white/5 p-1 rounded-2xl border border-white/10">
-              {[UserRole.STUDENT, UserRole.FACULTY, UserRole.ADMIN].map(role => (
-                <button 
-                  key={role}
-                  onClick={() => handleRoleChange(role)}
-                  className={`flex-1 py-3 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${currentRole === role ? 'bg-indigo-600 text-white shadow-lg' : 'text-white/40 hover:text-white/60'}`}
-                >
-                  {role}
-                </button>
-              ))}
-            </div>
-
             {loginError && (
               <div className="flex items-center gap-3 p-4 bg-rose-500/10 border border-rose-500/20 rounded-2xl">
                 <AlertCircle size={18} className="text-rose-400 shrink-0" />
@@ -188,14 +188,14 @@ const App: React.FC = () => {
             <div className="space-y-3">
               <input 
                 type="email" 
-                placeholder="Institutional Email" 
+                placeholder="Student Email" 
                 value={loginEmail}
                 onChange={(e) => setLoginEmail(e.target.value)}
                 className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-white placeholder-white/20 outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all font-bold text-sm" 
               />
               <input 
                 type="password" 
-                placeholder="Password"
+                placeholder="Access Key"
                 value={loginPassword}
                 onChange={(e) => setLoginPassword(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleLogin()}
@@ -209,16 +209,16 @@ const App: React.FC = () => {
               className="w-full py-5 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-60 disabled:cursor-not-allowed text-white rounded-2xl font-black uppercase tracking-[0.2em] text-[10px] md:text-xs transition-all shadow-xl shadow-indigo-600/20 flex items-center justify-center gap-3 active:scale-95 group"
             >
               {loginLoading ? (
-                <><Loader2 size={18} className="animate-spin" /> Authenticating...</>
+                <><Loader2 size={18} className="animate-spin" /> Verifying Credentials...</>
               ) : (
-                <>Sign In to Dashboard <LogIn size={18} className="group-hover:translate-x-1 transition-transform" /></>
+                <>Enter Portal <LogIn size={18} className="group-hover:translate-x-1 transition-transform" /></>
               )}
             </button>
           </div>
 
           <div className="mt-10 pt-8 border-t border-white/5">
             <p className="text-center text-[10px] text-white/40 font-bold leading-relaxed">
-              "The system follows a role-based access model where each user interacts with personalized dashboards connected to a centralized database."
+              "Access your courses, timetable, and academic records through our streamlined learning interface."
             </p>
           </div>
         </div>

@@ -18,7 +18,8 @@ import {
   UserPlus,
   ShieldCheck,
   History,
-  Archive
+  Archive,
+  Sparkles
 } from 'lucide-react';
 import { UserRole, NavItem, TimetableEntry, AttendanceRecord, PlacementStats } from './types';
 
@@ -59,32 +60,26 @@ export const ROLE_THEMES = {
 };
 
 export const NAVIGATION_ITEMS: NavItem[] = [
-  // CORE WORKFLOW
-  { id: 'dashboard', label: 'Overview', icon: 'LayoutDashboard', roles: [UserRole.ADMIN, UserRole.FACULTY, UserRole.STUDENT], category: 'core' },
+  // LEARNING CENTER
+  { id: 'dashboard', label: 'Overview', icon: 'LayoutDashboard', roles: [UserRole.STUDENT, UserRole.FACULTY, UserRole.ADMIN], category: 'learning' },
+  { id: 'journey', label: 'My Journey', icon: 'Sparkles', roles: [UserRole.STUDENT], category: 'learning' },
+  { id: 'academics', label: 'My Courses', icon: 'BookOpen', roles: [UserRole.STUDENT, UserRole.FACULTY], category: 'learning' },
+  { id: 'timetable', label: 'Class Schedule', icon: 'Calendar', roles: [UserRole.STUDENT, UserRole.FACULTY], category: 'learning' },
   
-  // ACADEMIC WORKFLOW
-  { id: 'academics', label: 'My Courses', icon: 'BookOpen', roles: [UserRole.FACULTY, UserRole.STUDENT], category: 'academic' },
-  { id: 'attendance', label: 'Attendance', icon: 'Users', roles: [UserRole.ADMIN, UserRole.FACULTY, UserRole.STUDENT], category: 'academic' },
-  { id: 'timetable', label: 'Class Schedule', icon: 'Calendar', roles: [UserRole.FACULTY, UserRole.STUDENT], category: 'academic' },
-  { id: 'exams', label: 'Exams & Results', icon: 'FileText', roles: [UserRole.ADMIN, UserRole.FACULTY, UserRole.STUDENT], category: 'academic' },
+  // ACADEMIC RECORDS
+  { id: 'attendance', label: 'Attendance', icon: 'Users', roles: [UserRole.STUDENT, UserRole.FACULTY], category: 'records' },
+  { id: 'exams', label: 'Results & GPA', icon: 'FileText', roles: [UserRole.STUDENT, UserRole.FACULTY], category: 'records' },
   
-  // ADMINISTRATIVE WORKFLOW
-  { id: 'sis', label: 'Student Mgmt', icon: 'UserPlus', roles: [UserRole.ADMIN, UserRole.REGISTRAR], category: 'admin' },
-  { id: 'faculty-mgmt', label: 'Faculty Mgmt', icon: 'ShieldCheck', roles: [UserRole.ADMIN], category: 'admin' },
-  { id: 'finance', label: 'Fee Portal', icon: 'CreditCard', roles: [UserRole.ADMIN, UserRole.STUDENT, UserRole.FINANCE], category: 'admin' },
+  // RESOURCES
+  { id: 'library', label: 'Digital Library', icon: 'Library', roles: [UserRole.STUDENT, UserRole.FACULTY], category: 'resources' },
+  { id: 'announcements', label: 'Notice Board', icon: 'Megaphone', roles: [UserRole.STUDENT, UserRole.FACULTY, UserRole.ADMIN], category: 'resources' },
   
-  // AUXILIARY SERVICES
-  { id: 'library', label: 'Library', icon: 'Library', roles: [UserRole.STUDENT, UserRole.FACULTY], category: 'auxiliary' },
-  { id: 'placements', label: 'Placements', icon: 'Briefcase', roles: [UserRole.ADMIN, UserRole.STUDENT], category: 'auxiliary' },
-  { id: 'announcements', label: 'Notice Board', icon: 'Megaphone', roles: [UserRole.ADMIN, UserRole.FACULTY, UserRole.STUDENT], category: 'auxiliary' },
-  
-  // SYSTEM
-  { id: 'logs', label: 'System Logs', icon: 'History', roles: [UserRole.ADMIN], category: 'core' },
-  { id: 'settings', label: 'Preferences', icon: 'Settings', roles: [UserRole.ADMIN, UserRole.FACULTY, UserRole.STUDENT], category: 'core' },
+  // SETTINGS
+  { id: 'settings', label: 'Preferences', icon: 'Settings', roles: [UserRole.STUDENT, UserRole.FACULTY, UserRole.ADMIN], category: 'system' },
 ];
 
 export const ICON_MAP: Record<string, any> = {
-  LayoutDashboard, BookOpen, Calendar, Users, CreditCard, GraduationCap, FileText, Briefcase, Settings, HelpCircle, Building2, Bus, Library, Megaphone, UserPlus, ShieldCheck, History, Archive
+  LayoutDashboard, BookOpen, Calendar, Users, CreditCard, GraduationCap, FileText, Briefcase, Settings, HelpCircle, Building2, Bus, Library, Megaphone, UserPlus, ShieldCheck, History, Archive, Sparkles
 };
 
 export const MOCK_TIMETABLE: TimetableEntry[] = [

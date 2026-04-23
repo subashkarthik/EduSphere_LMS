@@ -64,9 +64,32 @@ export interface LibraryBook {
   dueDate?: string;
 }
 
-export interface FeeRecord {
-  semester: string;
-  total: number;
-  paid: number;
-  status: 'fully_paid' | 'partial' | 'pending';
+export interface LearningMetric {
+  id: string;
+  user_id: string;
+  overall_score: number;
+  attendance_score: number;
+  assessment_score: number;
+  activity_score: number;
+  risk_level: 'NORMAL' | 'WARNING' | 'CRITICAL';
+  prediction_summary: string;
+  updated_at: string;
+}
+
+export interface Recommendation {
+  id: string;
+  type: 'REVISE' | 'PRACTICE' | 'ATTEND' | 'EXPLORE';
+  priority: 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
+  title: string;
+  message: string;
+  link?: string;
+}
+
+export interface UserNotification {
+  id: string;
+  title: string;
+  message: string;
+  type: 'ALERT' | 'INFO' | 'SUCCESS' | 'WARNING';
+  is_read: boolean;
+  created_at: string;
 }

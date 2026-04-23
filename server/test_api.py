@@ -1,4 +1,4 @@
-"""End-to-end API verification test for EduSphere backend."""
+"""End-to-end API verification test for UniVerse ERP backend."""
 import sys
 import requests
 
@@ -31,7 +31,7 @@ test("Health", t1)
 student_token = None
 def t2():
     global student_token
-    r = requests.post(f"{BASE}/auth/login", json={"email": "alex.j@edusphere.edu.in", "password": "student123"})
+    r = requests.post(f"{BASE}/auth/login", json={"email": "alex.j@universe.edu.in", "password": "student123"})
     assert r.status_code == 200
     data = r.json()
     student_token = data["access_token"]
@@ -141,7 +141,7 @@ test("Transcripts", t13)
 admin_token = None
 def t14():
     global admin_token
-    r = requests.post(f"{BASE}/auth/login", json={"email": "admin@edusphere.edu.in", "password": "admin123"})
+    r = requests.post(f"{BASE}/auth/login", json={"email": "admin@universe.edu.in", "password": "admin123"})
     assert r.status_code == 200
     admin_token = r.json()["access_token"]
     ah = {"Authorization": f"Bearer {admin_token}"}
@@ -171,7 +171,7 @@ test("Finance Reports", t16)
 
 # 17. Faculty Login + Courses
 def t17():
-    r = requests.post(f"{BASE}/auth/login", json={"email": "arun.kumar@edusphere.edu.in", "password": "faculty123"})
+    r = requests.post(f"{BASE}/auth/login", json={"email": "arun.kumar@universe.edu.in", "password": "faculty123"})
     assert r.status_code == 200
     fh = {"Authorization": f"Bearer {r.json()['access_token']}"}
     r2 = requests.get(f"{BASE}/courses", headers=fh)

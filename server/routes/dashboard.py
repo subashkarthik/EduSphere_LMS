@@ -162,7 +162,7 @@ def get_activity(
 
     if not activities:
         activities = [
-            ActivityResponse(label="System Ready", description="EduSphere backend with MS Access integration", time="Just now", type="system"),
+            ActivityResponse(label="System Ready", description="UniVerse ERP backend with MS Access integration", time="Just now", type="system"),
             ActivityResponse(label="Access DB Connected", description="7 databases linked successfully", time="Just now", type="system"),
         ]
 

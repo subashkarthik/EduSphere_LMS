@@ -22,6 +22,8 @@ def _compute_progress(course: Course, db: Session) -> int:
 
 @router.get("/")
 def list_courses(
+    limit: int = Query(20, le=100),
+    offset: int = Query(0),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
@@ -65,26 +67,28 @@ def list_courses(
                 "is_active": True,
                 "is_lab": bool(subj.get("IsLab", False)),
             })
-        return result
+        return result[offset:offset + limit]
 
     except Exception as e:
         print(f"[Access] Courses fallback to SQLite: {e}")
         # Fallback to SQLite
-        return _list_courses_sqlite(db, current_user)
+        return _list_courses_sqlite(db, current_user, limit, offset)
 
 
-def _list_courses_sqlite(db: Session, current_user: User):
+def _list_courses_sqlite(db: Session, current_user: User, limit: int, offset: int):
     """Original SQLite-based course listing as fallback."""
+    query = db.query(Course).filter(Course.is_active == True)
+    
     if current_user.role == UserRole.STUDENT:
-        enrollments = db.query(Enrollment).filter(
+        # Join with enrollment to filter for student
+        courses = query.join(Enrollment).filter(
             Enrollment.student_id == current_user.id,
-            Enrollment.status == EnrollmentStatus.ACTIVE,
-        ).all()
-        courses = [e.course for e in enrollments]
+            Enrollment.status == EnrollmentStatus.ACTIVE
+        ).offset(offset).limit(limit).all()
     elif current_user.role == UserRole.FACULTY:
-        courses = db.query(Course).filter(Course.faculty_id == current_user.id, Course.is_active == True).all()
+        courses = query.filter(Course.faculty_id == current_user.id).offset(offset).limit(limit).all()
     else:
-        courses = db.query(Course).filter(Course.is_active == True).all()
+        courses = query.offset(offset).limit(limit).all()
 
     result = []
     for c in courses:

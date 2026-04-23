@@ -35,8 +35,8 @@ const Sidebar: React.FC<SidebarProps> = ({ currentRole, activeTab, setActiveTab,
           <div className="flex items-center gap-4">
             <Logo size={42} />
             <div>
-              <h1 className="font-black text-lg leading-tight tracking-tight">EduSphere</h1>
-              <p className={`text-[9px] ${theme.accentText} font-black uppercase tracking-[0.2em]`}>LXP Platform</p>
+              <h1 className="font-black text-lg leading-tight tracking-tight">EduSpere</h1>
+              <p className={`text-[9px] ${theme.accentText} font-black uppercase tracking-[0.2em]`}>Learning Management System</p>
             </div>
           </div>
           <button onClick={onClose} className="lg:hidden p-2 hover:bg-white/10 rounded-lg">

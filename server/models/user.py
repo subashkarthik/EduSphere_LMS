@@ -43,6 +43,11 @@ class User(Base):
     audit_logs = relationship("AuditLog", back_populates="user")
     leave_requests = relationship("LeaveRequest", back_populates="user", foreign_keys="LeaveRequest.user_id")
     uploaded_materials = relationship("CourseMaterial", back_populates="uploaded_by")
+    
+    # Intelligence Layer Relationships
+    learning_metrics = relationship("LearningMetric", back_populates="user", cascade="all, delete-orphan")
+    recommendations = relationship("Recommendation", back_populates="user", cascade="all, delete-orphan")
+    user_notifications = relationship("UserNotification", back_populates="user", cascade="all, delete-orphan")
 
     def __repr__(self):
         return f"<User {self.name} ({self.role.value})>"

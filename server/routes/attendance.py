@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 from typing import List
@@ -198,6 +198,8 @@ def get_session(
 @router.get("/history/{course_id}", response_model=List[AttendanceHistoryResponse])
 def get_attendance_history(
     course_id: str,
+    limit: int = Query(20, le=100),
+    offset: int = Query(0),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
@@ -205,7 +207,7 @@ def get_attendance_history(
     sessions = db.query(AttendanceSession).filter(
         AttendanceSession.course_id == course_id,
         AttendanceSession.status == SessionStatus.CLOSED,
-    ).order_by(AttendanceSession.session_date.desc()).limit(20).all()
+    ).order_by(AttendanceSession.session_date.desc()).offset(offset).limit(limit).all()
 
     history = []
     for session in sessions:

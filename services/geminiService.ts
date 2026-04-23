@@ -11,7 +11,7 @@ export const askCMSAssistant = async (prompt: string, userRole: UserRole) => {
       model: 'gemini-3-flash-preview',
       contents: prompt,
       config: {
-        systemInstruction: `You are the EduSphere AI Assistant. 
+        systemInstruction: `You are the UniVerse AI Assistant. 
         Your goal is to assist users based on their role: ${userRole}.
         - For STUDENTS: Help with attendance status, upcoming exams, course summaries, and placement tips.
         - For FACULTY: Help with grading summaries, timetable scheduling, and curriculum planning.

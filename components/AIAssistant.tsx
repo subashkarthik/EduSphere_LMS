@@ -18,7 +18,7 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ role }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState<Message[]>([
-    { role: 'assistant', content: `Greetings! I am your EduSphere AI. How may I assist your ${role.toLowerCase()} activities today?` }
+    { role: 'assistant', content: `Greetings! I am your UniVerse AI. How may I assist your ${role.toLowerCase()} activities today?` }
   ]);
   const [loading, setLoading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -41,6 +41,27 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ role }) => {
     setLoading(false);
   };
 
+  const samplePrompts = {
+    [UserRole.STUDENT]: [
+      "What is my attendance in Cloud Computing?",
+      "When is my next exam?",
+      "Suggest some placement tips for Google.",
+      "Summarize my GPA progress."
+    ],
+    [UserRole.FACULTY]: [
+      "Show my grading summary for CS8701.",
+      "What is my timetable for tomorrow?",
+      "Who are the top performers in my class?",
+      "Generate a lesson plan for Unit 3."
+    ],
+    [UserRole.ADMIN]: [
+      "Show institutional revenue this month.",
+      "What is the current faculty-student ratio?",
+      "List all active placement drives.",
+      "Generate a system health report."
+    ],
+  };
+
   return (
     <div className={`fixed z-[100] transition-all duration-500 ${isOpen ? 'inset-0 md:inset-auto md:bottom-8 md:right-8' : 'bottom-6 right-6 md:bottom-8 md:right-8'}`}>
       {!isOpen ? (
@@ -51,12 +72,12 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ role }) => {
           <Sparkles size={24} className="animate-pulse" />
         </button>
       ) : (
-        <div className="w-full h-full md:w-96 md:h-[600px] bg-white md:rounded-3xl shadow-2xl border border-slate-200 flex flex-col overflow-hidden animate-in zoom-in-95 duration-300">
+        <div className="w-full h-full md:w-96 md:h-[650px] bg-white md:rounded-3xl shadow-2xl border border-slate-200 flex flex-col overflow-hidden animate-in zoom-in-95 duration-300">
           <div className={`${theme.primary} p-5 flex items-center justify-between text-white safe-top`}>
             <div className="flex items-center gap-3">
               <Bot size={22} className={theme.accentText} />
               <div>
-                <h3 className="font-black text-sm uppercase tracking-widest">EduAI Assistant</h3>
+                <h3 className="font-black text-sm uppercase tracking-widest">UniVerse AI</h3>
                 <p className="text-[10px] text-white/60 font-bold uppercase tracking-tighter">{role} Priority Channel</p>
               </div>
             </div>
@@ -77,6 +98,24 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ role }) => {
                 </div>
               </div>
             ))}
+            
+            {messages.length === 1 && !loading && (
+              <div className="pt-4 space-y-3">
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Quick Actions</p>
+                <div className="flex flex-wrap gap-2">
+                  {samplePrompts[role]?.map((prompt, i) => (
+                    <button
+                      key={i}
+                      onClick={() => { setInput(prompt); }}
+                      className="text-left p-3 bg-white border border-slate-100 rounded-xl text-xs font-bold text-slate-600 hover:border-indigo-200 hover:bg-indigo-50/30 transition-all active:scale-95 shadow-sm"
+                    >
+                      {prompt}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {loading && (
               <div className="flex justify-start">
                 <div className="bg-white border border-slate-100 shadow-sm rounded-2xl rounded-tl-none p-4">
@@ -108,6 +147,9 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ role }) => {
                 <Send size={18} />
               </button>
             </div>
+            <p className="text-center text-[9px] text-slate-300 font-bold uppercase tracking-tighter mt-4">
+              AI model: Gemini 3 Flash • Context-aware institutional assistant
+            </p>
           </div>
         </div>
       )}

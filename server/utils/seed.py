@@ -19,9 +19,8 @@ from models.user import User, UserRole, Department
 from models.academic import Course, Enrollment, TimetableEntry, CourseMaterial, TimetableEntryType, EnrollmentStatus
 from models.attendance import AttendanceSession, AttendanceLog, AttendanceStatus, SessionStatus
 from models.exam import ExamSchedule, ExamResult, ExamType
-from models.finance import FeeStructure, FeePayment, PaymentStatus
-from models.placement import PlacementDrive, PlacementApplication, PlacementStats, DriveStatus, ApplicationStatus
 from models.misc import Announcement, AuditLog, Priority, LibraryBook
+from models.intelligence import LearningMetric, Recommendation, UserNotification
 from utils.password import hash_password
 
 
@@ -36,12 +35,11 @@ def seed_database():
     try:
         _seed_all(db)
         db.commit()
-        print("✅ Database seeded successfully!")
+        print(" ✅ Database seeded successfully!")
         print("=" * 50)
-        print("🔑 Login Credentials:")
-        print("   Student:  alex.j@edusphere.edu.in / student123")
-        print("   Faculty:  arun.kumar@edusphere.edu.in / faculty123")
-        print("   Admin:    admin@edusphere.edu.in / admin123")
+        print("🔑 Student Credentials:")
+        print("   Email:    alex.j@universe.edu.in")
+        print("   Key:      student123")
         print("=" * 50)
     except Exception as e:
         db.rollback()
@@ -62,75 +60,75 @@ def _seed_all(db: Session):
 
     # ─── USERS ───
     admin = User(
-        id="user-admin", email="admin@edusphere.edu.in",
+        id="user-admin", email="admin@universe.edu.in",
         password_hash=hash_password("admin123"), name="Institutional Admin",
         role=UserRole.ADMIN, department_id="dept-cse",
         avatar="https://picsum.photos/seed/admin/200/200",
     )
     faculty_arun = User(
-        id="user-arun", email="arun.kumar@edusphere.edu.in",
+        id="user-arun", email="arun.kumar@universe.edu.in",
         password_hash=hash_password("faculty123"), name="Dr. Arun Kumar",
         role=UserRole.FACULTY, department_id="dept-cse", designation="HoD",
         avatar="https://picsum.photos/seed/arun/200/200",
     )
     faculty_devi = User(
-        id="user-devi", email="s.devi@edusphere.edu.in",
+        id="user-devi", email="s.devi@universe.edu.in",
         password_hash=hash_password("faculty123"), name="Prof. S. Devi",
         role=UserRole.FACULTY, department_id="dept-cse", designation="Associate Professor",
         avatar="https://picsum.photos/seed/devi/200/200",
     )
     faculty_raj = User(
-        id="user-raj", email="p.raj@edusphere.edu.in",
+        id="user-raj", email="p.raj@universe.edu.in",
         password_hash=hash_password("faculty123"), name="Dr. P. Raj",
         role=UserRole.FACULTY, department_id="dept-mech", designation="Professor",
         avatar="https://picsum.photos/seed/raj/200/200",
     )
     faculty_priya = User(
-        id="user-priya", email="k.priya@edusphere.edu.in",
+        id="user-priya", email="k.priya@universe.edu.in",
         password_hash=hash_password("faculty123"), name="Mrs. K. Priya",
         role=UserRole.FACULTY, department_id="dept-cse", designation="Assistant Professor",
         avatar="https://picsum.photos/seed/priya/200/200",
     )
     student_alex = User(
-        id="user-alex", email="alex.j@edusphere.edu.in",
+        id="user-alex", email="alex.j@universe.edu.in",
         password_hash=hash_password("student123"), name="Alex Johnson",
         role=UserRole.STUDENT, department_id="dept-cse",
-        enrollment_no="EDUS/2021/CS/042",
+        enrollment_no="UNI/2021/CS/042",
         avatar="https://picsum.photos/seed/alex/200/200",
     )
     student_sarah = User(
-        id="user-sarah", email="sarah.m@edusphere.edu.in",
+        id="user-sarah", email="sarah.m@universe.edu.in",
         password_hash=hash_password("student123"), name="Sarah Miller",
         role=UserRole.STUDENT, department_id="dept-mech",
-        enrollment_no="EDUS/2021/ME/102",
+        enrollment_no="UNI/2021/ME/102",
         avatar="https://picsum.photos/seed/sarah/200/200",
     )
     student_kevin = User(
-        id="user-kevin", email="kevin.d@edusphere.edu.in",
+        id="user-kevin", email="kevin.d@universe.edu.in",
         password_hash=hash_password("student123"), name="Kevin Durant",
         role=UserRole.STUDENT, department_id="dept-eee",
-        enrollment_no="EDUS/2021/EE/088",
+        enrollment_no="UNI/2021/EE/088",
         avatar="https://picsum.photos/seed/kevin/200/200",
     )
     student_bella = User(
-        id="user-bella", email="bella.t@edusphere.edu.in",
+        id="user-bella", email="bella.t@universe.edu.in",
         password_hash=hash_password("student123"), name="Bella Thorne",
         role=UserRole.STUDENT, department_id="dept-cse",
-        enrollment_no="EDUS/2021/CS/043",
+        enrollment_no="UNI/2021/CS/043",
         avatar="https://picsum.photos/seed/bella/200/200",
     )
     student_charlie = User(
-        id="user-charlie", email="charlie.d@edusphere.edu.in",
+        id="user-charlie", email="charlie.d@universe.edu.in",
         password_hash=hash_password("student123"), name="Charlie Dave",
         role=UserRole.STUDENT, department_id="dept-cse",
-        enrollment_no="EDUS/2021/CS/044",
+        enrollment_no="UNI/2021/CS/044",
         avatar="https://picsum.photos/seed/charlie/200/200",
     )
     student_diana = User(
-        id="user-diana", email="diana.p@edusphere.edu.in",
+        id="user-diana", email="diana.p@universe.edu.in",
         password_hash=hash_password("student123"), name="Diana Prince",
         role=UserRole.STUDENT, department_id="dept-cse",
-        enrollment_no="EDUS/2021/CS/045",
+        enrollment_no="UNI/2021/CS/045",
         avatar="https://picsum.photos/seed/diana/200/200",
     )
 
@@ -277,57 +275,11 @@ def _seed_all(db: Session):
     db.flush()
     print("   ✓ Exam schedules + results created")
 
-    # ─── FEE STRUCTURES + PAYMENTS (matching Finance module UI) ───
-    fee1 = FeeStructure(id="fee-1", department_id="dept-cse", semester_label="Semester 7", label="Tuition Fee (Sem 7)", amount=45000, due_date=date(2024, 8, 12), academic_year="2024-25")
-    fee2 = FeeStructure(id="fee-2", department_id="dept-cse", semester_label="Semester 7", label="Laboratory Fee", amount=8500, due_date=date(2024, 8, 12), academic_year="2024-25")
-    fee3 = FeeStructure(id="fee-3", department_id="dept-cse", semester_label="Semester 7", label="Institutional Transport", amount=12000, due_date=date(2024, 9, 30), academic_year="2024-25")
-    db.add_all([fee1, fee2, fee3])
-    db.flush()
-
-    # Alex has paid tuition + lab, transport pending
-    db.add(FeePayment(student_id="user-alex", fee_structure_id="fee-1", amount_paid=45000, payment_date=datetime(2024, 8, 12), transaction_id="TXN-2024-001"))
-    db.add(FeePayment(student_id="user-alex", fee_structure_id="fee-2", amount_paid=8500, payment_date=datetime(2024, 8, 12), transaction_id="TXN-2024-002"))
-    db.flush()
-    print("   ✓ Fee structures + payments created")
-
-    # ─── PLACEMENT DRIVES (matching Placements module UI) ───
-    drive1 = PlacementDrive(id="drive-google", company_name="Google", role_offered="Software Engineer", package_lpa=24.5, drive_date=date(2024, 10, 12), last_date_apply=date(2024, 10, 10), status=DriveStatus.UPCOMING, description="Google campus hiring for SDE roles")
-    drive2 = PlacementDrive(id="drive-tcs", company_name="TCS Digital", role_offered="System Analyst", package_lpa=7.2, drive_date=date(2024, 10, 15), last_date_apply=date(2024, 10, 12), status=DriveStatus.ONGOING)
-    drive3 = PlacementDrive(id="drive-zoho", company_name="Zoho", role_offered="Product Developer", package_lpa=12.0, drive_date=date(2024, 10, 18), last_date_apply=date(2024, 10, 15), status=DriveStatus.ONGOING)
-    db.add_all([drive1, drive2, drive3])
-    db.flush()
-
-    # Alex: applied to TCS, interview at Zoho
-    db.add(PlacementApplication(student_id="user-alex", drive_id="drive-tcs", status=ApplicationStatus.APPLIED))
-    db.add(PlacementApplication(student_id="user-alex", drive_id="drive-zoho", status=ApplicationStatus.INTERVIEW))
-    db.flush()
-    print("   ✓ Placement drives + applications created")
-
-    # ─── PLACEMENT STATS (matching PLACEMENT_STATS constant) ───
-    stats = [
-        PlacementStats(year="2021", placed=450, total=520, avg_lpa=5.5),
-        PlacementStats(year="2022", placed=485, total=540, avg_lpa=6.2),
-        PlacementStats(year="2023", placed=512, total=560, avg_lpa=7.1),
-        PlacementStats(year="2024", placed=545, total=600, avg_lpa=8.5),
-    ]
-    db.add_all(stats)
-    db.flush()
-    print("   ✓ Placement stats created (2021-2024)")
-
     # ─── ANNOUNCEMENTS ───
-    db.add(Announcement(title="Mid-Semester Break", content="Campus will be closed from Oct 20-25 for mid-semester break. All online classes will continue as scheduled.", author_id="user-admin", priority=Priority.HIGH, is_pinned=True))
+    db.add(Announcement(title="Welcome to EduSpere", content="Welcome to your new learning management portal! Access your courses and materials here.", author_id="user-admin", priority=Priority.HIGH, is_pinned=True))
     db.add(Announcement(title="Library New Arrivals", content="50 new reference books added to the Computer Science section. Check the library portal for availability.", author_id="user-arun", priority=Priority.MEDIUM))
-    db.add(Announcement(title="Placement Training", content="Mandatory aptitude training sessions start from Oct 28. All final year students must register.", author_id="user-admin", target_roles="STUDENT", priority=Priority.URGENT))
     db.flush()
     print("   ✓ Announcements created")
-
-    # ─── AUDIT LOGS ───
-    db.add(AuditLog(user_id="user-arun", action="Attendance Sync", entity_type="attendance", details="Faculty CS8701 completed sync for 87 students"))
-    db.add(AuditLog(user_id="user-admin", action="New Enrollment", entity_type="enrollment", details="Admission processed for 21CS049 (CSE)"))
-    db.add(AuditLog(user_id="user-admin", action="Fee Alert", entity_type="finance", details="Automated due notices sent to Semester 4"))
-    db.add(AuditLog(user_id="user-admin", action="Faculty Login", entity_type="security", details="Authorized new faculty login: Dr. Arun Kumar"))
-    db.flush()
-    print("   ✓ Audit logs created")
 
     # ─── LIBRARY BOOKS ───
     books = [
@@ -340,6 +292,50 @@ def _seed_all(db: Session):
         db.add(LibraryBook(isbn=isbn, title=title, author=author, publisher=pub, total_copies=total, available_copies=avail, category=cat))
     db.flush()
     print("   ✓ Library books created")
+
+
+    # ─── INTELLIGENCE LAYER ───
+    # Seed metrics for Alex
+    db.add(LearningMetric(
+        user_id="user-alex",
+        overall_score=88.4,
+        attendance_score=92.0,
+        assessment_score=94.0,
+        activity_score=85.0,
+        risk_level="NORMAL",
+        prediction_summary="Maintaining strong academic health. Predicted 8.5+ GPA if current trend continues."
+    ))
+
+    # Seed Recommendations for Alex
+    db.add_all([
+        Recommendation(
+            user_id="user-alex",
+            type="EXPLORE",
+            priority="MEDIUM",
+            title="Advanced Cloud Architectures",
+            message="Your Cloud Computing score is exceptional. Consider exploring the AWS Certified Solutions Architect path.",
+            link="/journey"
+        ),
+        Recommendation(
+            user_id="user-alex",
+            type="REVISE",
+            priority="LOW",
+            title="Network Security Refresher",
+            message="Your last assessment in Cyber Security had minor gaps in RSA encryption. Revisiting Module 4 is recommended.",
+            link="/academics"
+        )
+    ])
+
+    # Seed Notifications for Alex
+    db.add(UserNotification(
+        user_id="user-alex",
+        title="Intelligence Sync Complete",
+        message="Your Learning Health Score has been updated based on the latest internal assessment.",
+        type="SUCCESS"
+    ))
+
+    db.flush()
+    print("   ✓ Intelligence Layer metrics + recommendations created")
 
 
 if __name__ == "__main__":

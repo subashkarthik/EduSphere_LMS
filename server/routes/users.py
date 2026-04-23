@@ -47,7 +47,7 @@ def list_users(
 
                     results.append({
                         "id": str(fid),
-                        "email": f"{name.lower().replace(' ', '.').replace('_', '')}@edusphere.edu.in",
+                        "email": f"{name.lower().replace(' ', '.').replace('_', '')}@universe.edu.in",
                         "name": name,
                         "role": "FACULTY",
                         "department": f.get("Department", None),

@@ -1,8 +1,8 @@
 {
-  "name": "EduSphere - Learning Experience Platform",
-  "description": "A Multi-Tenant, AI-Ready Learning Experience Platform (LXP) for Institutions, featuring AI-driven academic insights, role-based dashboards, and complete institutional oversight.",
-  "requestFramePermissions": [
-    "camera",
-    "microphone"
-  ]
+  "name": "UniVerse — Universal University ERP System",
+  "version": "4.0.0",
+  "description": "Enterprise-grade academic management platform for modern universities. Full-stack React + FastAPI with MS Access hybrid database.",
+  "author": "UniVerse ERP",
+  "license": "MIT",
+  "keywords": ["university", "erp", "academic", "management", "attendance", "finance"]
 }

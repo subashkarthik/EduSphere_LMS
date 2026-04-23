@@ -5,6 +5,7 @@ from models.exam import ExamSchedule, ExamResult
 from models.finance import FeeStructure, FeePayment
 from models.placement import PlacementDrive, PlacementApplication, PlacementStats
 from models.misc import Announcement, AuditLog, LeaveRequest, LibraryBook, BookIssue
+from models.intelligence import LearningMetric, Recommendation, UserNotification
 
 __all__ = [
     "User", "Department",
@@ -14,4 +15,5 @@ __all__ = [
     "FeeStructure", "FeePayment",
     "PlacementDrive", "PlacementApplication", "PlacementStats",
     "Announcement", "AuditLog", "LeaveRequest", "LibraryBook", "BookIssue",
+    "LearningMetric", "Recommendation", "UserNotification",
 ]

@@ -344,3 +344,18 @@ def get_attendance_summary() -> List[Dict]:
 
     _set_cached("attendance_summary", result)
     return result
+
+
+def check_access_health() -> str:
+    """Check connectivity to all Access databases. Returns status string."""
+    results = test_connections()
+    connected = sum(1 for v in results.values() if v)
+    total = len(results)
+    if connected == total:
+        return f"healthy ({connected}/{total} databases connected)"
+    elif connected > 0:
+        failed = [k for k, v in results.items() if not v]
+        return f"degraded ({connected}/{total} connected, failed: {', '.join(failed)})"
+    else:
+        return "disconnected (0 databases reachable)"
+

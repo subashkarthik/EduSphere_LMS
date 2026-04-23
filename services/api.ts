@@ -1,5 +1,5 @@
 /**
- * EduSphere API Client
+ * UniVerse ERP — API Client
  * 
  * Centralized HTTP client for communicating with the FastAPI backend.
  * Handles JWT token management, automatic refresh, and request/response interceptors.
@@ -307,6 +307,14 @@ export const aiApi = {
       method: 'POST',
       body: JSON.stringify({ message }),
     }),
+};
+
+// ---------- Intelligence API ----------
+export const intelligenceApi = {
+  metrics: () => apiFetch<LearningMetric>('/intelligence/metrics'),
+  recommendations: () => apiFetch<Recommendation[]>('/intelligence/recommendations'),
+  notifications: () => apiFetch<UserNotification[]>('/intelligence/notifications'),
+  markRead: (id: string) => apiFetch(`/intelligence/notifications/${id}/read`, { method: 'POST' }),
 };
 
 // ---------- Users API ----------
